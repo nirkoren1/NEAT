@@ -11,8 +11,6 @@ import winsound
 from multiprocessing import Queue, Pool, Manager, Process
 import os
 from time import sleep
-import wmi
-import psutil
 
 
 class Agent:
@@ -88,16 +86,24 @@ def evaluate_agent(agent, loop, runs_per_agent, decay, env, q_ag):
                 break
 
 
-def get_cpu_temp():
-    psutil.sensors_temperatures()
+def cr_new_file():
+    dir_path = os.path.dirname(os.path.realpath(__file__)) + r'\box2d_hard_ag'
+    dirs = os.listdir(dir_path)
+    if len(dirs) == 0:
+        os.mkdir(dir_path + r'\run-1')
+        return r'\run-1'
+    else:
+        os.mkdir(dir_path + rf'\run-{len(dirs) + 1}')
+        return rf'\run-{len(dirs) + 1}'
 
 
 if __name__ == '__main__':
+    file_destination = cr_new_file()
     env = gym.make("BipedalWalkerHardcore-v3")
     ne.set_weight_limit(-1, 1)
     ne.training_agent = Agent
     ne.lstm = False
-    ne.population_size = 200
+    ne.population_size = 100
     ne.weightCoeff = 2
     ne.DisNExcCoeff = 73
     genome.mutation_rate = 0.1
@@ -146,10 +152,6 @@ if __name__ == '__main__':
         for ag in ne.current_gen:
             sys.stdout.write(f"\r{ne.current_gen.index(ag)}/{ne.population_size - 1}")
             sys.stdout.flush()
-            if ne.current_gen.index(ag) - ne.population_size - 1 in [-15, -10, -5]:
-                winsound.Beep(300, 500)
-            if ne.current_gen.index(ag) - ne.population_size - 1 in [-2]:
-                winsound.Beep(400, 500)
             for _ in range(runs_per_agent):
                 observation = env.reset()
                 while True:
@@ -166,7 +168,7 @@ if __name__ == '__main__':
         ne.update_fitness_lst()
         print(f'best fitness = {max(ne.fitness_lst)}')
         print(f'avg fitness = {ne.avg_group_fitness(ne.current_gen)}')
-        ne.save_agent(r'D:\Done_Projects\Ai_trader\gym\box2d-hard\box2d_hard')
+        ne.save_agent(r'C:\Users\Nirkoren\PycharmProjects\NEAT\gym\box2d-hard\box2d_hard_ag' + file_destination)
         # best_agent = ne.current_gen[np.argmax(ne.fitness_lst)]
         # observation = env.reset()
         # for _ in range(900):
