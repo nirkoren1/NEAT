@@ -163,6 +163,7 @@ def elitism():
         for spec in species:
             if len(spec) > 4:
                 best_ag = spec[np.argmax([ag.fitness for ag in spec])]
+                best_ag.fitness = 0
                 next_gen.append(best_ag)
                 next_gen.append(training_agent(innov_lst=innov_lst, genome=mutate(best_ag.genome.genes, innov_lst)))
     else:
@@ -185,12 +186,12 @@ def create_new_gen():
     generation_to_species()
     elitism()
     print(f'species num =  {len(species)}')
-    if abs(avg_group_fitness(current_gen) - 0) > 0.00001:
-        species_counts = calc_species_count()
-    else:
-        print("Low fitness - initializing...")
-        species_counts = [np.floor(100 / len(species)) for i in range(len(species))]
-        species_counts[-1] -= elitism_group * 2
+    # if abs(avg_group_fitness(current_gen) - 0) > 0.00001:
+    species_counts = calc_species_count()
+    # else:
+    #     print("Low fitness - initializing...")
+    #     species_counts = [np.floor(100 / len(species)) for i in range(len(species))]
+    #     species_counts[-1] -= elitism_group * 2
     print(f"species count = {sum(species_counts)}")
     for spec_indx in range(len(species)):
         for count in range(int(species_counts[spec_indx])):

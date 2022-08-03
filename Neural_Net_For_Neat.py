@@ -1,4 +1,5 @@
 from node import Node
+import numpy as np
 
 
 class NeuralNetwork:
@@ -45,6 +46,7 @@ class NeuralNetwork:
     @staticmethod
     def softmax(outputs: list):
         if sum(outputs) == 0:
+            outputs = np.clip(outputs, 0, 1)
             return [out for out in outputs]
         else:
             return [out / sum(outputs) for out in outputs]
